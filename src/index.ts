@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { transacaoHandler } from './transacoes/transacoes';
+import { createTransactionHandler, getTransactionHandler } from './transacoes/transacoes';
 import { createClient } from '@libsql/client';
 
 const HTTP_PORT = Bun.env.HTTP_PORT ?? 8080;
@@ -8,14 +8,29 @@ const client = createClient({
   url: 'file:local.db',
 });
 
+// 1	100000	0
+// 2	80000	0
+// 3	1000000	0
+// 4	10000000	0
+// 5	500000	0
+
+
 client.batch(
+
   [
-    'CREATE TABLE IF NOT EXISTS Transacoes (id INTEGER PRIMARY KEY AUTOINCREMENT, tipo CHAR(1) NOT NULL, descricao VARCHAR(255) not null, realizada_em DATETIME DEFAULT CURRENT_TIMESTAMP)',
+    'CREATE TABLE IF NOT EXISTS Clients (id INTEGER PRIMARY KEY AUTOINCREMENT, clientID INTEGER NOT NULL, limite INTEGER NOT NULL, saldo INTEGER NOT NULL, CONSTRAINT client_id unique (clientID))',
+    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (1, 1000, 1000)',
+    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (2, 1000, 1000)',
+    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (3, 1000, 1000)',
+    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (4, 1000, 1000)',
+    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (5, 1000, 1000)',
+    'CREATE TABLE IF NOT EXISTS Transacoes (id INTEGER PRIMARY KEY AUTOINCREMENT, tipo CHAR(1) NOT NULL, descricao VARCHAR(255) not null, valor INTEGER NOT NULL, clientId INTEGER NOT NULL, realizada_em DATETIME DEFAULT CURRENT_TIMESTAMP)',
   ],
   'write'
 );
 
 const app = new Elysia().listen(HTTP_PORT).state('storage', { client });
+
 
 app.group('/clientes', (app) =>
   app
@@ -23,16 +38,16 @@ app.group('/clientes', (app) =>
       '/:id/transacoes',
       ({ params: { id }, body: { valor, tipo, descricao }, store }) => {
         const { client } = store.storage;
-        return transacaoHandler({ valor, tipo, descricao }, id);
+        return createTransactionHandler({ valor, tipo, descricao, clientId: id }, client);
       },
       {
         params: t.Object({
           id: t.Numeric(),
         }),
         body: t.Object({
-          valor: t.Numeric(),
-          tipo: t.String(),
-          descricao: t.String(),
+          valor: t.Numeric({ minimum: 1 }),
+          tipo: t.String({ maxLength: 1, pattern: '^[cd]+$', error: "Tipo de transação inválida" }),
+          descricao: t.String({ minLength: 1, maxLength: 10 }),
         }),
       }
     )

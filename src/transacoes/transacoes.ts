@@ -1,23 +1,29 @@
-export interface ITransacao {
-  id: number;
-  tipo: string;
-  descricao: string;
-  realizada_em: Date;
-}
+import { ICreateTransacaoBody } from '../interfaces';
 
-interface ITransacaoBody {
-  valor: number;
-  tipo: string;
-  descricao: string;
-}
+import { Client } from '@libsql/client';
+import { findTransactionById, insertTransaction } from './storage';
 
-import { createClient } from '@libsql/client';
-import { insertTransaction } from './storage';
-
-export const transacaoHandler = async (
-  { valor, tipo, descricao }: ITransacaoBody,
-  id: number
+export const createTransactionHandler = async (
+  { valor, tipo, descricao, clientId }: ICreateTransacaoBody,
+  storage: Client,
 ) => {
-  const transacao = await insertTransaction(tipo, descricao);
-  return transacao;
+  //todo
+  if (clientId < 5) {
+    return null;
+  }
+
+  const transactionId = await insertTransaction({ valor, tipo, descricao, storage, clientId });
+  const transaction = await findTransactionById({ storage, transactionId })
+  return transaction;
 };
+
+interface IGetTransactionBody {
+  storage: Client,
+  transactionId: number
+}
+
+export const getTransactionHandler = async (
+  { storage, transactionId }: IGetTransactionBody
+) => {
+  return findTransactionById({ storage, transactionId });
+}

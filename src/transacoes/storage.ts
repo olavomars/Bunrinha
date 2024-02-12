@@ -1,16 +1,33 @@
-import { createClient } from '@libsql/client';
+import { Client } from '@libsql/client';
 
-const client = createClient({
-  url: 'file:local.db',
-});
+export interface IInsertTransactionParams {
+  tipo: string,
+  descricao: string,
+  valor: number,
+  storage: Client,
+  clientId: number
+}
 
-export const insertTransaction = async (tipo: string, descricao: string) => {
-  const result = await client.execute({
-    sql: 'INSERT INTO Transacoes (tipo, descricao) VALUES (?, ?)',
-    args: [tipo, descricao],
+
+export const insertTransaction = async ({ tipo, descricao, valor, storage, clientId }: IInsertTransactionParams) => {
+  const row = await storage.execute({
+    sql: 'INSERT INTO Transacoes (tipo, descricao, valor, clientId) VALUES (?, ?, ?, ?)',
+    args: [tipo, descricao, valor, clientId],
   });
 
-  client.close();
-
-  return result;
+  return Number(row.lastInsertRowid);
 };
+
+interface IFindTransactionParams {
+  transactionId: number,
+  storage: Client
+}
+
+export const findTransactionById = async ({ transactionId, storage }: IFindTransactionParams) => {
+  const row = await storage.execute({
+    sql: 'SELECT * FROM Transacoes WHERE clientId = ?',
+    args: [transactionId]
+  })
+
+  return row;
+}
