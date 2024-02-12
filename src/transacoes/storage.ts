@@ -8,6 +8,9 @@ export interface IInsertTransactionParams {
   clientId: number
 }
 
+/*
+  insert transaction and update client limite and saldo and return
+*/
 
 export const insertTransaction = async ({ tipo, descricao, valor, storage, clientId }: IInsertTransactionParams) => {
   const row = await storage.execute({
@@ -25,7 +28,7 @@ interface IFindTransactionParams {
 
 export const findTransactionById = async ({ transactionId, storage }: IFindTransactionParams) => {
   const row = await storage.execute({
-    sql: 'SELECT * FROM Transacoes WHERE clientId = ?',
+    sql: 'SELECT * FROM Transacoes WHERE id = ?',
     args: [transactionId]
   })
 

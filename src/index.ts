@@ -18,12 +18,12 @@ const client = createClient({
 client.batch(
 
   [
-    'CREATE TABLE IF NOT EXISTS Clients (id INTEGER PRIMARY KEY AUTOINCREMENT, clientID INTEGER NOT NULL, limite INTEGER NOT NULL, saldo INTEGER NOT NULL, CONSTRAINT client_id unique (clientID))',
-    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (1, 1000, 1000)',
-    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (2, 1000, 1000)',
-    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (3, 1000, 1000)',
-    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (4, 1000, 1000)',
-    'INSERT IGNORE INTO Clients (clientID, limite, saldo) VALUES (5, 1000, 1000)',
+    'CREATE TABLE IF NOT EXISTS Clients (id INTEGER PRIMARY KEY AUTOINCREMENT, limite INTEGER NOT NULL, saldo INTEGER NOT NULL)',
+    'INSERT OR IGNORE INTO Clients (id, limite, saldo) VALUES (1, 1000, 1000)',
+    'INSERT OR IGNORE INTO Clients (id, limite, saldo) VALUES (2, 1000, 1000)',
+    'INSERT OR IGNORE INTO Clients (id, limite, saldo) VALUES (3, 1000, 1000)',
+    'INSERT OR IGNORE INTO Clients (id, limite, saldo) VALUES (4, 1000, 1000)',
+    'INSERT OR IGNORE INTO Clients (id, limite, saldo) VALUES (5, 1000, 1000)',
     'CREATE TABLE IF NOT EXISTS Transacoes (id INTEGER PRIMARY KEY AUTOINCREMENT, tipo CHAR(1) NOT NULL, descricao VARCHAR(255) not null, valor INTEGER NOT NULL, clientId INTEGER NOT NULL, realizada_em DATETIME DEFAULT CURRENT_TIMESTAMP)',
   ],
   'write'

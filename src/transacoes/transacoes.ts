@@ -8,9 +8,14 @@ export const createTransactionHandler = async (
   storage: Client,
 ) => {
   //todo
-  if (clientId < 5) {
+  if (clientId > 5) {
     return null;
   }
+
+  // try {
+  //   await storage.execute("UPDATE Clients SET saldo = $1 WHERE id = $2;", [saldo, clientId,])
+
+  // }
 
   const transactionId = await insertTransaction({ valor, tipo, descricao, storage, clientId });
   const transaction = await findTransactionById({ storage, transactionId })
