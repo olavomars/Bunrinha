@@ -12,23 +12,11 @@ export const createTransactionHandler = async (
     return null;
   }
 
-  // try {
-  //   await storage.execute("UPDATE Clients SET saldo = $1 WHERE id = $2;", [saldo, clientId,])
-
-  // }
-
-  const transactionId = await insertTransaction({ valor, tipo, descricao, storage, clientId });
-  const transaction = await findTransactionById({ storage, transactionId })
+  const transaction = await insertTransaction({ valor, tipo, descricao, storage, clientId });
   return transaction;
 };
 
 interface IGetTransactionBody {
   storage: Client,
   transactionId: number
-}
-
-export const getTransactionHandler = async (
-  { storage, transactionId }: IGetTransactionBody
-) => {
-  return findTransactionById({ storage, transactionId });
 }
