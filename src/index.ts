@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { createTransactionHandler } from './transacoes/transacoes';
+import { createTransactionHandler, listTransactionHandler } from './transacoes/transacoes';
 import { createClient } from '@libsql/client';
 
 const HTTP_PORT = Bun.env.HTTP_PORT ?? 8080;
@@ -9,7 +9,6 @@ const client = createClient({
 });
 
 client.batch(
-
   [
     'CREATE TABLE IF NOT EXISTS Clients (id INTEGER PRIMARY KEY AUTOINCREMENT, limite INTEGER NOT NULL, saldo INTEGER NOT NULL)',
     'INSERT OR IGNORE INTO Clients (id, limite, saldo) VALUES (1, 100000, 0)',
@@ -28,9 +27,9 @@ app.group('/clientes', (app) =>
   app
     .post(
       '/:id/transacoes',
-      ({ params: { id }, body: { valor, tipo, descricao }, store }) => {
+      ({ params: { id }, body: { valor, tipo, descricao }, store, set }) => {
         const { client } = store.storage;
-        return createTransactionHandler({ valor, tipo, descricao, clientId: id }, client);
+        return createTransactionHandler({ valor, tipo, descricao, clientId: id }, client, set);
       },
       {
         params: t.Object({
@@ -43,8 +42,13 @@ app.group('/clientes', (app) =>
         }),
       }
     )
-    .get(':id/extrato', () => {
-      console.log('extrato');
+    .get(':id/extrato', ({ params: { id }, store, set }) => {
+      const { client } = store.storage;
+      return listTransactionHandler({ id, storage: client, set });
+    }, {
+      params: t.Object({
+        id: t.Numeric(),
+      })
     })
 );
 

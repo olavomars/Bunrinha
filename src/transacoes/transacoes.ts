@@ -1,22 +1,42 @@
 import { ICreateTransacaoBody } from '../interfaces';
 
 import { Client } from '@libsql/client';
-import { findTransactionById, insertTransaction } from './storage';
+import { insertTransaction, listTransactions } from './storage';
 
 export const createTransactionHandler = async (
   { valor, tipo, descricao, clientId }: ICreateTransacaoBody,
   storage: Client,
+  set: Record<string, unknown>,
 ) => {
-  //todo
+
   if (clientId > 5) {
+    set.status = 404;
     return null;
   }
 
   const transaction = await insertTransaction({ valor, tipo, descricao, storage, clientId });
+
+  if (transaction === '422') {
+    set.status = 422;
+    return null
+  };
   return transaction;
+
 };
 
-interface IGetTransactionBody {
+interface IListTransaction {
   storage: Client,
-  transactionId: number
+  id: number
+  set: Record<string, unknown>
+}
+
+export const listTransactionHandler = async ({ id, storage, set }: IListTransaction) => {
+  if (id > 5) {
+    set.status = 404;
+    return null;
+  }
+
+  const transaction = await listTransactions({ clientId: id, storage });
+  return transaction;
+
 }

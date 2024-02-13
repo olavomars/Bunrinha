@@ -1,6 +1,6 @@
 export interface ITransacao {
   id: number;
-  tipo: ETipo;
+  tipo: keyof typeof TransactionTypes,
   descricao: string;
   realizada_em: Date;
 }
@@ -17,7 +17,7 @@ export interface ItransacaoResponse {
   saldo: number;
 }
 
-export enum ETipo {
-  "c" = "c",
-  "d" = "d",
-}
+export const TransactionTypes = {
+  CREDITO: 'c',
+  DEBITO: 'd',
+};
