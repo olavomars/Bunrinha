@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   api01: &api
-    image: bunrinha:latest
+    image: thalison/bunrinha:latest
     hostname: api01
     deploy:
       resources:
