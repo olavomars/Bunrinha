@@ -22,6 +22,15 @@ client.batch(
 );
 
 const app = new Elysia().listen(HTTP_PORT).state('storage', { client });
+    app.onError(({ code, error }) => {
+        console.log(error)
+        return new Response(error.toString())
+    })
+    .get('/', () => {
+        throw new Error('Server is during maintenance')
+
+        return 'unreachable'
+    })
 
 app.group('/clientes', (app) =>
   app
@@ -53,5 +62,5 @@ app.group('/clientes', (app) =>
 );
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+  `t a amais🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );
