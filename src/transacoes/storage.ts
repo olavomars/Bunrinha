@@ -98,8 +98,8 @@ export const listTransactions = async ({ clientId, storage }: IGetClientInfo) =>
     "write"
   );
 
-  const rows = result[0] as any;
-  const firstRow = rows[0];
+  const resultSet = result[0];
+  const firstRow = resultSet.rows[0];
 
   const saldo = {
     total: firstRow.total,
