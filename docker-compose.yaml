@@ -2,9 +2,7 @@ version: "3.5"
 
 services:
   api01: &api
-    # Lembre-se de que seu serviço HTTP deve estar hospedado num repositório
-    # publicamente acessível! Ex.: hub.docker.com
-    image: thalison/bunrinha:latest
+    image: bunrinha:latest
     hostname: api01
     ports:
       - "8081:8080"
